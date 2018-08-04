@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class AbsLossEstimator extends PixelLossEstimator {
     @Override
-    public float calc_loss(float original, float canvas) {
+    public double calc_loss(double original, double canvas) {
         return Math.abs(original - canvas);
     }
 
-    public AbsLossEstimator(float[][] image, ArrayList<float[][]> features) {
+    public AbsLossEstimator(double[][] image, ArrayList<double[][]> features) {
         super(image, features);
     }
 }

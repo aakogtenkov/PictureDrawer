@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class WhiteLossEstimator extends PixelLossEstimator {
     @Override
-    public float calc_loss(float original, float canvas) {
+    public double calc_loss(double original, double canvas) {
         return Math.max(0, canvas - original);
     }
 
-    public WhiteLossEstimator(float[][] image, ArrayList<float[][]> features) {
+    public WhiteLossEstimator(double[][] image, ArrayList<double[][]> features) {
         super(image, features);
     }
 }

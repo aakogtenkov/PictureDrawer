@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 public class Logger {
     private PrintWriter writer;
 
-    public void updateLog(String markdown, float[] info) {
+    public void updateLog(String markdown, double[] info) {
         if (writer != null) {
             writer.print(markdown);
             for (int i = 0; i < info.length; ++i) {
@@ -14,6 +14,10 @@ public class Logger {
             }
             writer.println();
         }
+    }
+
+    public void close() {
+        this.writer.close();
     }
 
     public Logger(String log_filename) {

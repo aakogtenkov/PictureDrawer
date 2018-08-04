@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public abstract class PixelPencil implements DrawTool {
     protected LossEstimator lossEstimator;
     protected LossEstimator mainLossEstimator;
-    private float[][] canvas;
-    private ArrayList<float[][]> features;
+    private double[][] canvas;
+    private ArrayList<double[][]> features;
 
     private int maxIter;
     private int minLoss;
@@ -25,7 +25,7 @@ public abstract class PixelPencil implements DrawTool {
 
     }
 
-    public PixelPencil(float[][] canvas, ArrayList<float[][]> features,
+    public PixelPencil(double[][] canvas, ArrayList<double[][]> features,
                        int maxIter, int minLoss, int area_step, int area_size,
                        ToolParams toolParams, LossEstimator mainLossEstimator, ColorAdder colorAdder) {
         this.maxIter = maxIter;
@@ -39,9 +39,9 @@ public abstract class PixelPencil implements DrawTool {
         this.colorAdder = colorAdder;
     }
 
-    public ArrayList<int[]> find_max_loss_area(float min_loss) {
+    public ArrayList<int[]> find_max_loss_area(double min_loss) {
         ArrayList<int[]> result = new ArrayList<>();
-        ArrayList<Float> losses = new ArrayList<>();
+        ArrayList<Double> losses = new ArrayList<>();
         int width = this.canvas[0].length;
         int height = this.canvas.length;
 
@@ -53,13 +53,13 @@ public abstract class PixelPencil implements DrawTool {
                 int rx = Math.min(width - 1, x + radius);
                 int ly = Math.max(0, y - radius);
                 int ry = Math.min(height - 1, y + radius);
-                float loss = this.lossEstimator.get_loss(new int[]{lx, ly, rx, ry});
+                double loss = this.lossEstimator.get_loss(new int[]{lx, ly, rx, ry});
                 if (loss > min_loss) {
                     result.add(new int[] {lx, ly, rx, ry});
                     losses.add(loss);
                     for (int i = losses.size() - 1; i > 0; --i) {
                         if (losses.get(i) > losses.get(i - 1)) {
-                            float tmp_loss = losses.get(i - 1);
+                            double tmp_loss = losses.get(i - 1);
                             losses.set(i - 1, losses.get(i));
                             losses.set(i, tmp_loss);
                             int[] tmp_bounds = result.get(i - 1);
@@ -77,7 +77,7 @@ public abstract class PixelPencil implements DrawTool {
         for (int x = bounds[0]; x <= bounds[2]; ++x) {
             for (int y = bounds[1]; y <= bounds[3]; ++y) {
                 ArrayList<GrayPoint> change = new ArrayList<>();
-                float color = this.toolParams.color;
+                double color = this.toolParams.color;
                 if (canvas[y][x] + color > 1.0f) {
                     color = 1 - canvas[y][x];
                 }
@@ -85,7 +85,7 @@ public abstract class PixelPencil implements DrawTool {
                     color = -canvas[y][x];
                 }
                 change.add(new GrayPoint(x, y, color));
-                float improvement = this.lossEstimator.get_improvement(canvas, change);
+                double improvement = this.lossEstimator.get_improvement(canvas, change);
                 if (improvement > 0) {
                     return true;
                 }
@@ -96,9 +96,9 @@ public abstract class PixelPencil implements DrawTool {
 
     private boolean tryDrawInArea(int[] bounds, Logger logger) {
         LineGeneratorV2 lineGenerator = new LineGeneratorV2(this.canvas, this.features, bounds, this.toolParams, this.mainLossEstimator, this.colorAdder);
-        float min_loss = 0;
+        double min_loss = 0;
         while (lineGenerator.next()) {
-            float improvement = lineGenerator.getImprovement();
+            double improvement = lineGenerator.getImprovement();
             if (improvement > min_loss) {
                 min_loss = improvement;
                 lineGenerator.saveParams();

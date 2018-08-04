@@ -9,31 +9,31 @@ import java.util.ArrayList;
 
 public class LineGeneratorV2 {
     private LossEstimator lossEstimator;
-    private float[][] canvas;
-    private float[][] levels;
+    private double[][] canvas;
+    private double[][] levels;
     public BasicLineDrawerV2 drawer;
 
     private int cur_x, cur_y;
-    private float cur_len, cur_angle;
+    private double cur_len, cur_angle;
 
-    private float color;
+    private double color;
     private int[] bounds;
 
-    private float max_stroke_length;
-    private float min_stroke_length;
-    private float delta_stroke_length;
-    private float max_angle_deviation = (float)Math.PI / 8;
-    private float delta_angle = max_angle_deviation / 2;
+    private double max_stroke_length;
+    private double min_stroke_length;
+    private double delta_stroke_length;
+    private double max_angle_deviation = Math.PI / 8;
+    private double delta_angle = max_angle_deviation / 2;
 
     private int x_saved, y_saved;
-    private float len_saved, angle_saved;
-    private float improvement_saved;
+    private double len_saved, angle_saved;
+    private double improvement_saved;
 
     private int max_step_without_improvements = 3;
-    private float best_improvement = 0;
+    private double best_improvement = 0;
     private int steps_since_last_improvement = 0;
 
-    public LineGeneratorV2(float[][] canvas, ArrayList<float[][]> features, int[] bounds, ToolParams params, LossEstimator lossEstimator, ColorAdder colorAdder) {
+    public LineGeneratorV2(double[][] canvas, ArrayList<double[][]> features, int[] bounds, ToolParams params, LossEstimator lossEstimator, ColorAdder colorAdder) {
         this.canvas = canvas;
         this.levels = features.get(0);
         this.bounds = bounds;
@@ -49,18 +49,18 @@ public class LineGeneratorV2 {
         this.cur_angle = 10;
     }
 
-    private float[] calcLine(int x, int y, float length, float angle) {
-        float x1, y1, x2, y2;
-        float dl = length / 2;
-        float sin = (float)Math.sin(angle);
-        float cos = (float)Math.cos(angle);
-        x1 = (float)x + 0.5f + dl * cos;
-        x2 = (float)x + 0.5f - dl * cos;
-        y1 = (float)y + 0.5f + dl * sin;
-        y2 = (float)y + 0.5f - dl * sin;
+    private double[] calcLine(int x, int y, double length, double angle) {
+        double x1, y1, x2, y2;
+        double dl = length / 2;
+        double sin = Math.sin(angle);
+        double cos = Math.cos(angle);
+        x1 = (double)x + 0.5 + dl * cos;
+        x2 = (double)x + 0.5 - dl * cos;
+        y1 = (double)y + 0.5 + dl * sin;
+        y2 = (double)y + 0.5 - dl * sin;
 
         // to make possible lines with (num_pixels % 2 == 0) pixels
-        if ((int)Math.floor((double)length) % 2 == 1) {
+        if ((int)Math.floor(length) % 2 == 1) {
             x2 += cos;
             y2 += sin;
         }
@@ -69,7 +69,7 @@ public class LineGeneratorV2 {
         x2 = Math.min(Math.max(0.5f, x2), this.canvas[0].length - 0.5f);
         y1 = Math.min(Math.max(0.5f, y1), this.canvas.length - 0.5f);
         y2 = Math.min(Math.max(0.5f, y2), this.canvas.length - 0.5f);
-        return new float[] {x1, y1, x2, y2};
+        return new double[] {x1, y1, x2, y2};
     }
 
     public boolean next() {
@@ -95,12 +95,12 @@ public class LineGeneratorV2 {
                 this.cur_angle = this.levels[cur_y][cur_x] - this.max_angle_deviation;
             }
         }
-        float[] line = calcLine(cur_x, cur_y, cur_len, cur_angle);
+        double[] line = calcLine(cur_x, cur_y, cur_len, cur_angle);
         drawer.fabricateSegment(this.canvas, line[0], line[1], line[2], line[3], this.color);
         return true;
     }
 
-    public void callback(float improvement) {
+    public void callback(double improvement) {
         if (improvement > this.best_improvement) {
             this.best_improvement = improvement;
             this.steps_since_last_improvement = 0;
@@ -110,7 +110,7 @@ public class LineGeneratorV2 {
         }
     }
 
-    public float getImprovement() {
+    public double getImprovement() {
         return lossEstimator.get_improvement(drawer.getChange());
     }
 
@@ -123,7 +123,7 @@ public class LineGeneratorV2 {
     }
 
     public void applySavedParams(LossEstimator[] estimators) {
-        float[] line = calcLine(x_saved, y_saved, len_saved, angle_saved);
+        double[] line = calcLine(x_saved, y_saved, len_saved, angle_saved);
 
         drawer.drawSegment(this.canvas, line[0], line[1], line[2], line[3], this.color, this.lossEstimator);
         for (LossEstimator est: estimators) {
@@ -132,6 +132,6 @@ public class LineGeneratorV2 {
     }
 
     public void writeLogInfo(Logger logger) {
-        logger.updateLog("Line", new float[] {x_saved, y_saved, len_saved, angle_saved, this.color, improvement_saved});
+        logger.updateLog("Line", new double[] {x_saved, y_saved, len_saved, angle_saved, this.color, improvement_saved});
     }
 }

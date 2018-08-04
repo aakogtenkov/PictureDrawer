@@ -1,6 +1,6 @@
 package ColorScheme;
 
 public interface ColorAdder {
-    float addColor(float original, float add_color);
-    float boundColor(float original, float add_color);
+    double addColor(double original, double add_color);
+    double boundColor(double original, double add_color);
 }

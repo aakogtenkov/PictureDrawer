@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class ImagePreprocessor {
 
-    public static ArrayList<float[][]> extractFeatures(float[][] image) {
+    public static ArrayList<double[][]> extractFeatures(double[][] image) {
         int height = image.length;
         int width = image[0].length;
-        ArrayList<float[][]> result = new ArrayList<>();
-        float[][] empty_image = new float[height][width];
+        ArrayList<double[][]> result = new ArrayList<>();
+        double[][] empty_image = new double[height][width];
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
                 empty_image[i][j] = 0;
@@ -16,7 +16,7 @@ public class ImagePreprocessor {
         }
         result.add(empty_image);
 
-        float[][] level_angle = new float[height][width];
+        double[][] level_angle = new double[height][width];
 
         GradientExtractor.calcGradientLevel(image, level_angle, 10, 0.7f);
 

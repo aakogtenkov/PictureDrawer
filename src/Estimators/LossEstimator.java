@@ -3,10 +3,10 @@ package Estimators;
 import Generators.GrayPoint;
 
 public interface LossEstimator {
-    float get_loss(int[] bounds);
-    float calc_loss(float original, float canvas);
-    void update_loss(float[][] canvas, int[] bounds);
-    void update_loss(float[][] canvas, int[] points_x, int[] points_y);
-    void update_loss(float[][] canvas, Iterable<GrayPoint> change);
-    float get_improvement(Iterable<GrayPoint> change);
+    double get_loss(int[] bounds);
+    double calc_loss(double original, double canvas);
+    void update_loss(double[][] canvas, int[] bounds);
+    void update_loss(double[][] canvas, int[] points_x, int[] points_y);
+    void update_loss(double[][] canvas, Iterable<GrayPoint> change);
+    double get_improvement(Iterable<GrayPoint> change);
 }

@@ -17,14 +17,14 @@ public class Main {
 
     public void run_pipeline(final boolean invoke_window, String[] args) {
         BufferedImage _image = ImageLoader.loadPicture("example_picture6.jpg");
-        float[][] image = ImageConverter.pictureToGray(_image, true);
+        double[][] image = ImageConverter.pictureToGray(_image, true);
 
         ImageLoader.savePicture(ImageConverter.grayToPicture(image, true), "gray_image.png");
 
         GraphicWindow graphicWindow = null;
 
-        ArrayList<float[][]> features = ImagePreprocessor.extractFeatures(image);
-        float[][] canvas = features.remove(0);
+        ArrayList<double[][]> features = ImagePreprocessor.extractFeatures(image);
+        double[][] canvas = features.remove(0);
 
         AbsLossEstimator lossEstimator = new AbsLossEstimator(image, features);
 
@@ -33,9 +33,9 @@ public class Main {
         Logger logger = new Logger("log.txt");
 
         ToolParams toolParams = new ToolParams();
-        toolParams.color = 0.1f;
-        toolParams.max_stroke_len = 16;
-        toolParams.min_stroke_len = 2;
+        toolParams.color = 0.04f;
+        toolParams.max_stroke_len = 30;
+        toolParams.min_stroke_len = 1;
         DrawTool pencil = new Pencil(image, canvas, features, 50, 0, 10, 40, toolParams, lossEstimator, colorAdder);
 
         toolParams = new ToolParams();
@@ -73,6 +73,9 @@ public class Main {
 
         _image = ImageConverter.grayToPicture(canvas, true);
         ImageLoader.savePicture(_image, "example_picture_result.png");
+
+        logger.close();
+
         System.out.println("Done");
     }
 

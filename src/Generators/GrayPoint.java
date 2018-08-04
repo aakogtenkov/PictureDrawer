@@ -3,9 +3,9 @@ package Generators;
 public class GrayPoint{
     public int x;
     public int y;
-    public float color;
+    public double color;
 
-    public GrayPoint(int x, int y, float color) {
+    public GrayPoint(int x, int y, double color) {
         this.x = x;
         this.y = y;
         this.color = color;

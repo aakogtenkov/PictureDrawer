@@ -7,7 +7,7 @@ import Estimators.WhiteLossEstimator;
 import java.util.ArrayList;
 
 public class WhitePencil extends PixelPencil {
-    public WhitePencil(float[][] image, float[][] canvas, ArrayList<float[][]> features,
+    public WhitePencil(double[][] image, double[][] canvas, ArrayList<double[][]> features,
                        int maxIter, int minLoss, int area_step, int area_size,
                        ToolParams toolParams, LossEstimator mainLossEstimator, ColorAdder colorAdder) {
         super(canvas, features, maxIter, minLoss, area_step, area_size, toolParams, mainLossEstimator, colorAdder);
