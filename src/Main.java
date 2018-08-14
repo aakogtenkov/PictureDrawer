@@ -18,6 +18,7 @@ public class Main {
     public void run_pipeline(final boolean invoke_window, String[] args) {
         BufferedImage _image = ImageLoader.loadPicture("example_picture6.jpg");
         double[][] image = ImageConverter.pictureToGray(_image, true);
+        image = ImagePreprocessor.normalizePictureSize(image, 10, 10);
 
         ImageLoader.savePicture(ImageConverter.grayToPicture(image, true), "gray_image.png");
 
@@ -26,7 +27,7 @@ public class Main {
         ArrayList<double[][]> features = ImagePreprocessor.extractFeatures(image);
         double[][] canvas = features.remove(0);
 
-        AbsLossEstimator lossEstimator = new AbsLossEstimator(image, features);
+        AbsLossEstimator lossEstimator = new AbsLossEstimator(image, features, canvas, 10, 10);
 
         ColorAdder colorAdder = new BaseColorAdder();
 
@@ -36,6 +37,7 @@ public class Main {
         toolParams.color = 0.04f;
         toolParams.max_stroke_len = 30;
         toolParams.min_stroke_len = 1;
+        toolParams.delta_stroke_len = 1;
         DrawTool pencil = new Pencil(image, canvas, features, 50, 0, 10, 40, toolParams, lossEstimator, colorAdder);
 
         toolParams = new ToolParams();

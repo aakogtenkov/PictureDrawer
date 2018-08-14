@@ -25,4 +25,24 @@ public class ImagePreprocessor {
         result.add(level_angle);
         return result;
     }
+
+    public static double[][] normalizePictureSize(double[][] image, int delta_width, int delta_height) {
+        int add_w = (delta_width - image[0].length % delta_width) % delta_width;
+        int add_h = (delta_height - image.length % delta_height) % delta_height;
+        if (add_h == 0 && add_w == 0) {
+            return image;
+        }
+        double[][] result = new double[image.length + add_h][image[0].length + add_w];
+        for (int y = 0; y < result.length; ++y) {
+            for (int x = 0; x < result[0].length; ++x) {
+                result[y][x] = 0;
+            }
+        }
+        for (int y = 0; y < image.length; ++y) {
+            for (int x = 0; x < image[0].length; ++x) {
+                result[y + add_h / 2][x + add_w / 2] = image[y][x];
+            }
+        }
+        return result;
+    }
 }

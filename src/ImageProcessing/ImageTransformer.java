@@ -3,10 +3,10 @@ package ImageProcessing;
 public class ImageTransformer {
 
     private static double gaussFunction(int x, int y, double sigma) {
-        double pow_denom = (double)sigma;
+        double pow_denom = sigma;
         pow_denom = 2 * pow_denom * pow_denom;
         double pow = -(double)(x*x + y*y) / pow_denom;
-        return (double)(Math.exp(pow) / (2 * Math.PI * sigma));
+        return (Math.exp(pow) / (2 * Math.PI * sigma));
     }
 
     private static double[][] buildGaussKernel(int kernel_size, double sigma) {

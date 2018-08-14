@@ -11,6 +11,6 @@ public class WhitePencil extends PixelPencil {
                        int maxIter, int minLoss, int area_step, int area_size,
                        ToolParams toolParams, LossEstimator mainLossEstimator, ColorAdder colorAdder) {
         super(canvas, features, maxIter, minLoss, area_step, area_size, toolParams, mainLossEstimator, colorAdder);
-        this.lossEstimator = new WhiteLossEstimator(image, features);
+        this.lossEstimator = new WhiteLossEstimator(image, features, canvas, 10, 10);
     }
 }

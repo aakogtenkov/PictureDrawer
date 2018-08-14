@@ -8,7 +8,7 @@ public class BlackLossEstimator extends PixelLossEstimator {
         return Math.max(0, original - canvas);
     }
 
-    public BlackLossEstimator(double[][] image, ArrayList<double[][]> features) {
-        super(image, features);
+    public BlackLossEstimator(double[][] image, ArrayList<double[][]> features, double[][] canvas, int delta_width, int delta_height) {
+        super(image, features, canvas, delta_width, delta_height);
     }
 }

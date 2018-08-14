@@ -4,6 +4,7 @@ import ColorScheme.ColorAdder;
 import Estimators.LossEstimator;
 import Generators.GrayPoint;
 import Generators.LineGeneratorV2;
+import Generators.LineGeneratorV3;
 import Helpers.Logger;
 
 import java.util.ArrayList;
@@ -95,7 +96,7 @@ public abstract class PixelPencil implements DrawTool {
     }*/
 
     private boolean tryDrawInArea(int[] bounds, Logger logger) {
-        LineGeneratorV2 lineGenerator = new LineGeneratorV2(this.canvas, this.features, bounds, this.toolParams, this.mainLossEstimator, this.colorAdder);
+        LineGeneratorV3 lineGenerator = new LineGeneratorV3(this.canvas, this.features, bounds, this.toolParams, this.mainLossEstimator, this.colorAdder);
         double min_loss = 0;
         while (lineGenerator.next()) {
             double improvement = lineGenerator.getImprovement();

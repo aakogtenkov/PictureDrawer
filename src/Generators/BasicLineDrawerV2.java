@@ -52,27 +52,25 @@ public class BasicLineDrawerV2 {
     }
 
     private void fabricateVertical(double[][] canvas, int x, int start_y, int end_y, double color) {
-        this.points.clear();
         if (end_y < start_y) {
             int tmp = start_y;
             start_y = end_y;
             end_y = tmp;
         }
         for (int y = start_y; y <= end_y; ++y) {
-            double col = this.colorAdder.addColor(canvas[y][x], color);
+            double col = this.colorAdder.addColor(canvas[y][x], color, 3);
             this.points.add(new GrayPoint(x, y, col));
         }
     }
 
     private void fabricateHorizontal(double[][] canvas, int start_x, int y, int end_x, double color) {
-        this.points.clear();
         if (end_x < start_x) {
             int tmp = start_x;
             start_x = end_x;
             end_x = tmp;
         }
         for (int x = start_x; x <= end_x; ++x) {
-            double col = this.colorAdder.addColor(canvas[y][x], color);
+            double col = this.colorAdder.addColor(canvas[y][x], color, 3);
             this.points.add(new GrayPoint(x, y, col));
         }
     }
@@ -81,6 +79,7 @@ public class BasicLineDrawerV2 {
         double[] line = buildLine(x, y, angle);
         double dy = Math.tan(angle);
         double dlen = Math.sqrt(Math.pow(dy, 2) + 1);
+        //System.out.printf("%f %f %f\n", x, y, angle);
         while (length > -ATOL) {
             int cur_x = (int)Math.floor(x);
             int cur_y = (int)Math.floor(y);
@@ -101,11 +100,11 @@ public class BasicLineDrawerV2 {
             double dist1 = getDistance(center_x, up_y, line);
             double part0 = dist0 / (dist0 + dist1);
             double part1 = dist1 / (dist0 + dist1);
-            double col0 = part0 * color;
-            double col1 = part1 * color;
-            this.points.add(new GrayPoint(cur_x, cur_y, colorAdder.addColor(canvas[cur_y][cur_x], col0)));
+            double col0 = part1 * color;
+            double col1 = part0 * color;
+            this.points.add(new GrayPoint(cur_x, cur_y, colorAdder.addColor(canvas[cur_y][cur_x], col0, 3)));
             if (add_y >= 0 && add_y < canvas.length) {
-                this.points.add(new GrayPoint(cur_x, add_y, colorAdder.addColor(canvas[add_y][cur_x], col1)));
+                this.points.add(new GrayPoint(cur_x, add_y, colorAdder.addColor(canvas[add_y][cur_x], col1, 3)));
             }
 
             x += 1;
@@ -118,11 +117,12 @@ public class BasicLineDrawerV2 {
         double sin = Math.sin(angle);
         double cos = Math.cos(angle);
         double[] line = buildLine(x, y, angle);
-        double dx = cos / sin;
+        double dx = Math.abs(cos / sin);
         double dy = 1;
         if (sin < 0) {
             dy = -1;
         }
+        //System.out.printf("%f %f %f\n", x, y, angle);
         double dlen = Math.sqrt(Math.pow(dx, 2) + 1);
         while (length > -ATOL) {
             int cur_x = (int)Math.floor(x);
@@ -144,11 +144,11 @@ public class BasicLineDrawerV2 {
             double dist1 = getDistance(left_x, center_y, line);
             double part0 = dist0 / (dist0 + dist1);
             double part1 = dist1 / (dist0 + dist1);
-            double col0 = part0 * color;
-            double col1 = part1 * color;
-            this.points.add(new GrayPoint(cur_x, cur_y, colorAdder.addColor(canvas[cur_y][cur_x], col0)));
+            double col0 = part1 * color;
+            double col1 = part0 * color;
+            this.points.add(new GrayPoint(cur_x, cur_y, colorAdder.addColor(canvas[cur_y][cur_x], col0, 3)));
             if (add_x >= 0 && add_x < canvas[0].length) {
-                this.points.add(new GrayPoint(add_x, cur_y, colorAdder.addColor(canvas[cur_y][add_x], col1)));
+                this.points.add(new GrayPoint(add_x, cur_y, colorAdder.addColor(canvas[cur_y][add_x], col1, 3)));
             }
 
             x += dx;
@@ -157,8 +157,18 @@ public class BasicLineDrawerV2 {
         }
     }
 
-    public void fabricateSegment(double[][] canvas, double x1, double y1, double x2, double y2, double color) {
-        this.points.clear();
+    public void fabricateSegment(double[][] canvas, double x1, double y1, double x2, double y2, double color, boolean clear_saved) {
+        if (clear_saved) {
+            this.points.clear();
+        }
+        if (x1 > x2) {
+            double tmp = x1;
+            x1 = x2;
+            x2 = tmp;
+            tmp = y1;
+            y1 = y2;
+            y2 = tmp;
+        }
         double angle = Math.atan2((y2 - y1), (x2 - x1));
         while (angle < -Math.PI / 2) {
             angle += Math.PI;
@@ -168,22 +178,22 @@ public class BasicLineDrawerV2 {
         }
         double length = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
         //System.out.printf("%f %f %f %f %f %f %f\n", x1, y1, x2, y2, length, angle, Math.sin((double)angle));
-        if ((int)x1 == (int)x2) {
+        if (Math.abs(x1 - x2) < ATOL) {
             fabricateVertical(canvas, (int)x1, (int)y1, (int)y2, color);
         }
-        else if ((int)y1 == (int)y2) {
+        else if (Math.abs(y1 - y2) < ATOL) {
             fabricateHorizontal(canvas, (int)x1, (int)y1, (int)x2, color);
         }
         else if (Math.abs(x2 - x1) > Math.abs(y2 - y1)) {
-            fabricateAlongX(canvas, (int)x1, (int)y1, length, angle, color);
+            fabricateAlongX(canvas, x1, y1, length, angle, color);
         }
         else {
-            fabricateAlongY(canvas, (int)x2, (int)y2, length, angle, color);
+            fabricateAlongY(canvas, x1, y1, length, angle, color);
         }
     }
 
     public void drawSegment(double[][] canvas, double x1, double y1, double x2, double y2, double color, LossEstimator lossEstimator) {
-        fabricateSegment(canvas, x1, y1, x2, y2, color);
+        fabricateSegment(canvas, x1, y1, x2, y2, color, true);
         applyToCanvas(canvas);
         updateLossEstimator(canvas, lossEstimator);
     }

@@ -8,7 +8,7 @@ public class AbsLossEstimator extends PixelLossEstimator {
         return Math.abs(original - canvas);
     }
 
-    public AbsLossEstimator(double[][] image, ArrayList<double[][]> features) {
-        super(image, features);
+    public AbsLossEstimator(double[][] image, ArrayList<double[][]> features, double[][] canvas, int delta_width, int delta_height) {
+        super(image, features, canvas, delta_width, delta_height);
     }
 }
