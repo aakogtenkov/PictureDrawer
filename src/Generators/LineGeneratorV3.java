@@ -93,13 +93,16 @@ public class LineGeneratorV3 {
         int ind = lossEstimator.get_index_for_best_improvement(drawer.getChange(), max_step_without_improvements, (int)delta_stroke_length * 2);
         len_saved = ind + 1;
         improvement_saved = lossEstimator.get_improvement(drawer.getChange(), ind + 1);
-        len_saved /= 2;
+        //len_saved /= 2;
         //System.out.printf("%f %f\n", len_saved, improvement_saved);
     }
 
     public void applySavedParams(LossEstimator[] estimators) {
         //System.out.printf("%f %f %f %f %d %d\n", line[0], line[1], line[2], line[3], x_saved, y_saved);
-        drawer.drawSegment(canvas, (double)x_saved + 0.5, (double)y_saved + 0.5, angle_saved, len_saved, this.color, this.lossEstimator);
+        drawer.fabricateSegmentFromMiddle(canvas, (double)x_saved + 0.5, (double)y_saved + 0.5, angle_saved, this.max_stroke_length, this.color);
+        drawer.applyToCanvas(canvas, (int)len_saved);
+        drawer.updateLossEstimator(canvas, this.lossEstimator);
+        //drawer.drawSegment(canvas, (double)x_saved + 0.5, (double)y_saved + 0.5, angle_saved, len_saved, this.color, this.lossEstimator);
         //drawer.drawSegment(this.canvas, line[0], line[1], line[2], line[3], this.color, this.lossEstimator);
         for (LossEstimator est: estimators) {
             drawer.updateLossEstimator(this.canvas, est);
@@ -107,6 +110,6 @@ public class LineGeneratorV3 {
     }
 
     public void writeLogInfo(Logger logger) {
-        logger.updateLog("Line", new double[] {x_saved, y_saved, len_saved, angle_saved, this.color, improvement_saved});
+        logger.updateLog("Line", new double[] {x_saved, y_saved, len_saved / 2, angle_saved, this.color, improvement_saved});
     }
 }

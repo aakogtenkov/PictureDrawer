@@ -41,6 +41,8 @@ public abstract class PixelPencil implements DrawTool {
     }
 
     public ArrayList<int[]> find_max_loss_area(double min_loss) {
+        //this.lossEstimator.calc_area_losses();
+
         ArrayList<int[]> result = new ArrayList<>();
         ArrayList<Double> losses = new ArrayList<>();
         int width = this.canvas[0].length;
@@ -51,10 +53,12 @@ public abstract class PixelPencil implements DrawTool {
         for (int y = 0; y < height; y += this.area_step) {
             for (int x = 0; x < width; x += this.area_step) {
                 int lx = Math.max(0, x - radius);
-                int rx = Math.min(width - 1, x + radius);
+                int rx = Math.min(width - 1, x + radius - 1);
                 int ly = Math.max(0, y - radius);
-                int ry = Math.min(height - 1, y + radius);
-                double loss = this.lossEstimator.get_loss(new int[]{lx, ly, rx, ry});
+                int ry = Math.min(height - 1, y + radius - 1);
+                //System.out.printf("%d %d %d %d\n", lx, ly, rx, ry);
+                //double loss0 = this.lossEstimator.get_loss(new int[]{lx, ly, rx, ry});
+                double loss = this.lossEstimator.get_area_loss(new int[]{lx, ly, rx, ry});
                 if (loss > min_loss) {
                     result.add(new int[] {lx, ly, rx, ry});
                     losses.add(loss);
@@ -120,8 +124,20 @@ public abstract class PixelPencil implements DrawTool {
         int height = this.canvas.length;
         this.lossEstimator.update_loss(this.canvas, new int[] {0, 0, width - 1, height - 1});
         this.mainLossEstimator.update_loss(this.canvas, new int[] {0, 0, width - 1, height - 1});
+        this.lossEstimator.calc_area_losses();
 
         for (int i = 0; i < this.maxIter; i++) {
+            /*boolean result = false;
+            while (!result) {
+                int[] bounds = this.lossEstimator.get_area_with_max_loss(this.minLoss);
+                if (bounds[0] == -1) {
+                    return false;
+                }
+                result = tryDrawInArea(bounds, logger);
+                if (!result) {
+                    this.lossEstimator.set_possible_to_improve(bounds, false);
+                }
+            }*/
             ArrayList<int[]> all_bounds = find_max_loss_area(this.minLoss);
             if (all_bounds.size() == 0) {
                 System.out.println("No opportunities to draw: area");
@@ -129,9 +145,14 @@ public abstract class PixelPencil implements DrawTool {
             }
             boolean result = false;
             for (int j = 0; j < all_bounds.size(); ++j) {
-                result |= tryDrawInArea(all_bounds.get(j), logger);
-                if (result) {
-                    break;
+                if (this.lossEstimator.is_possible_to_improve(all_bounds.get(j))) {
+                    result |= tryDrawInArea(all_bounds.get(j), logger);
+                    if (result) {
+                        break;
+                    }
+                    else {
+                        this.lossEstimator.set_possible_to_improve(all_bounds.get(j), false);
+                    }
                 }
             }
             if (!result) {

@@ -22,6 +22,13 @@ public class BasicLineDrawerV3 {
         }
     }
 
+    public void applyToCanvas(double[][] canvas, int number) {
+        for (int i = 0; i < number; ++i) {
+            GrayPoint p = this.points.get(i);
+            canvas[p.y][p.x] = p.color;
+        }
+    }
+
     public ArrayList<GrayPoint> getChange() {
         return this.points;
     }
@@ -218,17 +225,23 @@ public class BasicLineDrawerV3 {
         while (angle > Math.PI / 2) {
             angle -= Math.PI;
         }
+        if (Math.abs(angle) < 0.05) {
+            angle += 0.05;
+        }
+        else if (Math.abs(angle) > Math.PI / 2 - 0.05) {
+            angle -= 0.05;
+        }
         /*if ((int)x == 43 && (int)y == 15) {
             System.out.println(angle);
         }*/
         //System.out.printf("%f %f %f %f %f %f %f\n", x1, y1, x2, y2, length, angle, Math.sin((double)angle));
-        if (Math.abs(angle) < 0.01) {
+        /*if (Math.abs(angle) < 0.05) {
             fabricateHorizontal(canvas, (int)x, (int)y, length, color);
         }
         else if (Math.abs(angle) > Math.PI / 2 - 0.05) {
             fabricateVertical(canvas, (int)x, (int)y, length, color);
         }
-        else if (Math.abs(angle) < Math.PI / 4) {
+        else */if (Math.abs(angle) < Math.PI / 4) {
             fabricateAlongX(canvas, x, y, angle, length, color);
         }
         else {

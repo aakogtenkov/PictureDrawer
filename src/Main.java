@@ -1,3 +1,4 @@
+import ColorScheme.AtanColorAdder;
 import ColorScheme.BaseColorAdder;
 import ColorScheme.ColorAdder;
 import DrawTools.DrawTool;
@@ -5,10 +6,12 @@ import DrawTools.Pencil;
 import DrawTools.ToolParams;
 import DrawTools.WhitePencil;
 import Estimators.AbsLossEstimator;
+import Estimators.StrictAbsLossEstimator;
 import Helpers.Logger;
 import ImageProcessing.ImageConverter;
 import ImageProcessing.ImageLoader;
 import ImageProcessing.ImagePreprocessor;
+import Postprocessing.Postprocessor;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -27,14 +30,16 @@ public class Main {
         ArrayList<double[][]> features = ImagePreprocessor.extractFeatures(image);
         double[][] canvas = features.remove(0);
 
-        AbsLossEstimator lossEstimator = new AbsLossEstimator(image, features, canvas, 10, 10);
+        //AbsLossEstimator lossEstimator = new AbsLossEstimator(image, features, canvas, 10, 10);
+        StrictAbsLossEstimator lossEstimator = new StrictAbsLossEstimator(image, features, canvas, 10, 10, 2.5);
 
-        ColorAdder colorAdder = new BaseColorAdder();
+        //ColorAdder colorAdder = new BaseColorAdder();
+        ColorAdder colorAdder = new AtanColorAdder();
 
         Logger logger = new Logger("log.txt");
 
         ToolParams toolParams = new ToolParams();
-        toolParams.color = 0.04f;
+        toolParams.color = 1.0 / 16.0;
         toolParams.max_stroke_len = 30;
         toolParams.min_stroke_len = 1;
         toolParams.delta_stroke_len = 1;
@@ -53,7 +58,7 @@ public class Main {
 
         //ImageProcessing.ImageLoader.savePicture(ImageProcessing.ImageConverter.grayToPicture(lossEstimator.loss, true),
         //        "example_picture_loss_iter_0.png");
-        for (int iter = 0; iter < 1000; ++iter) {
+        for (int iter = 0; iter < 100000; ++iter) {
             boolean updated = false;
             updated |= pencil.draw(logger);
             //updated |= whitePencil.draw(logger);
@@ -81,8 +86,18 @@ public class Main {
         System.out.println("Done");
     }
 
+    public void postprocess(String[] args) {
+        BufferedImage _image = ImageLoader.loadPicture("example_picture6.jpg");
+        double[][] image = ImageConverter.pictureToGray(_image, true);
+        image = ImagePreprocessor.normalizePictureSize(image, 10, 10);
+
+        Postprocessor postprocessor = new Postprocessor(3, image[0].length, image.length);
+        postprocessor.process("log.txt");
+    }
+
     public static void main(String[] args) {
         Main main = new Main();
         main.run_pipeline(true, args);
+        main.postprocess(args);
     }
 }
