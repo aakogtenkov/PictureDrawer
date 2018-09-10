@@ -6,6 +6,7 @@ import DrawTools.Pencil;
 import DrawTools.ToolParams;
 import DrawTools.WhitePencil;
 import Estimators.AbsLossEstimator;
+import Estimators.SameColorEstimator;
 import Estimators.StrictAbsLossEstimator;
 import Helpers.Logger;
 import ImageProcessing.ImageConverter;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class Main {
 
     public void run_pipeline(final boolean invoke_window, String[] args) {
-        BufferedImage _image = ImageLoader.loadPicture("example_picture6.jpg");
+        BufferedImage _image = ImageLoader.loadPicture("armine2.jpg");
         double[][] image = ImageConverter.pictureToGray(_image, true);
         image = ImagePreprocessor.normalizePictureSize(image, 10, 10);
 
@@ -31,12 +32,13 @@ public class Main {
         double[][] canvas = features.remove(0);
 
         //AbsLossEstimator lossEstimator = new AbsLossEstimator(image, features, canvas, 10, 10);
-        StrictAbsLossEstimator lossEstimator = new StrictAbsLossEstimator(image, features, canvas, 10, 10, 2.5);
+        //StrictAbsLossEstimator lossEstimator = new StrictAbsLossEstimator(image, features, canvas, 10, 10, 2.5);
+        SameColorEstimator lossEstimator = new SameColorEstimator(image, features, canvas, 10, 10, 2.5, 3);
 
         //ColorAdder colorAdder = new BaseColorAdder();
         ColorAdder colorAdder = new AtanColorAdder();
 
-        Logger logger = new Logger("log.txt");
+        Logger logger = new Logger("armine_log.txt");
 
         ToolParams toolParams = new ToolParams();
         toolParams.color = 1.0 / 16.0;
@@ -79,7 +81,7 @@ public class Main {
         }
 
         _image = ImageConverter.grayToPicture(canvas, true);
-        ImageLoader.savePicture(_image, "example_picture_result.png");
+        ImageLoader.savePicture(_image, "armine_result.png");
 
         logger.close();
 
@@ -91,13 +93,13 @@ public class Main {
         double[][] image = ImageConverter.pictureToGray(_image, true);
         image = ImagePreprocessor.normalizePictureSize(image, 10, 10);
 
-        Postprocessor postprocessor = new Postprocessor(3, image[0].length, image.length);
+        Postprocessor postprocessor = new Postprocessor(4, image[0].length, image.length);
         postprocessor.process("log.txt");
     }
 
     public static void main(String[] args) {
         Main main = new Main();
-        main.run_pipeline(true, args);
+        //main.run_pipeline(true, args);
         main.postprocess(args);
     }
 }

@@ -10,6 +10,8 @@ public class BasicLineDrawerV3 {
     private ArrayList<GrayPoint> points;
     private ColorAdder colorAdder;
     private static double ATOL = 1e-3;
+    private double random_deviation_multiplier = 0;
+    private Random random = new Random();
 
     public BasicLineDrawerV3(ColorAdder colorAdder) {
         this.points = new ArrayList<>();
@@ -20,6 +22,10 @@ public class BasicLineDrawerV3 {
         for (GrayPoint p : this.points) {
             canvas[p.y][p.x] = p.color;
         }
+    }
+
+    public void setRandom(double random_deviation_multiplier) {
+        this.random_deviation_multiplier = random_deviation_multiplier;
     }
 
     public void applyToCanvas(double[][] canvas, int number) {
@@ -164,7 +170,7 @@ public class BasicLineDrawerV3 {
             int cur_x = (int)Math.floor(left_x);
             int cur_y = (int)Math.floor(left_y);
             if (cur_x >= 0 && cur_x < canvas[0].length && cur_y >= 0 && cur_y < canvas.length) {
-                processAlongX(canvas, cur_x, cur_y, line, color * dlen);
+                processAlongX(canvas, cur_x, cur_y, line, color * dlen * (1 + this.random.nextGaussian() * this.random_deviation_multiplier));
             }
             length -= dlen;
             left_x--;
@@ -173,7 +179,7 @@ public class BasicLineDrawerV3 {
             cur_x = (int)Math.floor(right_x);
             cur_y = (int)Math.floor(right_y);
             if (length > ATOL && cur_x >= 0 && cur_x < canvas[0].length && cur_y >= 0 && cur_y < canvas.length) {
-                processAlongX(canvas, cur_x, cur_y, line, color * dlen);
+                processAlongX(canvas, cur_x, cur_y, line, color * dlen * (1 + this.random.nextGaussian() * this.random_deviation_multiplier));
             }
             length -= dlen;
             right_x++;
@@ -200,7 +206,7 @@ public class BasicLineDrawerV3 {
             int cur_x = (int)Math.floor(left_x);
             int cur_y = (int)Math.floor(left_y);
             if (cur_x >= 0 && cur_x < canvas[0].length && cur_y >= 0 && cur_y < canvas.length) {
-                processAlongY(canvas, cur_x, cur_y, line, color * dlen);
+                processAlongY(canvas, cur_x, cur_y, line, color * dlen * (1 + this.random.nextGaussian() * this.random_deviation_multiplier));
             }
             length -= dlen;
             left_x -= dx;
@@ -209,7 +215,7 @@ public class BasicLineDrawerV3 {
             cur_x = (int)Math.floor(right_x);
             cur_y = (int)Math.floor(right_y);
             if (length > ATOL && cur_x >= 0 && cur_x < canvas[0].length && cur_y >= 0 && cur_y < canvas.length) {
-                processAlongY(canvas, cur_x, cur_y, line, color * dlen);
+                processAlongY(canvas, cur_x, cur_y, line, color * dlen * (1 + this.random.nextGaussian() * this.random_deviation_multiplier));
             }
             length -= dlen;
             right_x += dx;
